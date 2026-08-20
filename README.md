@@ -1,108 +1,122 @@
-# vinext-starter
+# Soraya Farah — Programa Mente Clara
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+Site institucional de Soraya Farah com apresentação do Programa Mente Clara,
+formatos de prática, experiências, Yoga & Wellness Experience e Zenmind.
 
-## Prerequisites
+Este repositório está preparado para continuidade por Pedro Roberto e pelo
+Claude Code. O objetivo do handoff é preservar o conteúdo e o visual aprovados,
+permitindo publicar o site em um domínio próprio registrado no Registro.br.
 
-- Node.js `>=22.13.0`
-- Linux with `flock`, `curl`, and GNU `timeout`
+## Estado da entrega
 
-## Sites Lifecycle
+- página única responsiva em português;
+- menu mobile e navegação por âncoras;
+- galeria Zenmind automática no desktop e no celular;
+- arraste manual, pausa ao toque e instrução visível no celular;
+- fotos da galeria exibidas inteiras, sem cortar bordas originais;
+- logo Yoga & Wellness em PNG transparente limpo;
+- metadados Open Graph e Twitter com imagem absoluta para WhatsApp;
+- lint, build e teste de HTML executáveis por CI.
 
-The Sites lifecycle CLI runs the locked dependency install before returning this checkout. Edit the source under `app/`, then checkpoint when a coherent milestone is ready to inspect or share. The remote Sites builder runs `npm run build` against the pushed commit. Do not repeat install or build as a normal pre-checkpoint step.
+## Requisitos
 
-This starter does not use `wrangler.jsonc`.
+- Node.js `>=22.13.0`;
+- npm;
+- Linux para os scripts de build, que usam `flock` e GNU `timeout`.
 
-`install:ci` is intentionally a single, non-retrying `npm ci`. It refuses a concurrent install for the same project, consumes a matching image-seeded npm cache with `--prefer-offline` while retaining registry fallback for a missing cache object, otherwise downloads and verifies the complete vinext tarball recorded in `package-lock.json`, limits npm to one socket, and terminates a stalled install. `build` applies a short timeout and then validates the Sites artifact. These helpers target Linux and use GNU `timeout`; they are not native macOS scripts.
+## Início rápido
 
-Scripts that need writable project-scoped home, npm, XDG, and temporary paths use `scripts/sites-env.sh`. The `dev` and `start` scripts honor the caller's runtime environment and keep Wrangler logs inside the checkout. The generated `.sites-runtime/` directory is disposable and ignored by Git.
-
-## Included Shape
-
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+git clone --branch claude-ready-2026-08-20 \
+  https://github.com/SinguBoss/soraya-farah-mente-clara.git
+cd soraya-farah-mente-clara
+cp .env.example .env.local
+npm ci
+npm run dev
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+Abrir o endereço local informado pelo Vite. Antes da publicação, trocar o valor
+de `NEXT_PUBLIC_SITE_URL` em `.env.local` pela URL pública definitiva.
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+## Validação obrigatória
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+Executar antes de qualquer deploy:
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+```bash
+npm run lint
+npm test
+```
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+`npm test` realiza o build, valida o Worker gerado e confirma no HTML:
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+- título público correto;
+- imagem Open Graph absoluta;
+- instrução mobile da galeria;
+- logo Yoga & Wellness corrigida;
+- ausência de avisos de conteúdo provisório.
 
-## Diagnostic Commands
+O artefato de produção é criado em `dist/`.
 
-- `npm run install:ci`: perform the one bounded lockfile install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build and validate the deployable Sites artifact
-- `npm run start`: start the built Vinext application
-- `npm test`: build, validate, and verify the rendered development-preview metadata
-- `npm run validate:artifact`: recheck an existing artifact's manifest and ESM `default.fetch` export
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+## Variável de ambiente
 
-Use build and validation commands for targeted diagnosis after a remote failure, not as part of the normal checkpoint path.
+| Variável | Obrigatória em produção | Exemplo |
+|---|---:|---|
+| `NEXT_PUBLIC_SITE_URL` | Sim | `https://www.seudominio.com.br` |
 
-The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.
+Use apenas a origem pública, sem caminho adicional. O código utiliza essa URL
+para canonical, `og:url`, `og:image` e Twitter Card. Enquanto ela não estiver
+configurada, a imagem social usa uma URL absoluta do próprio repositório como
+fallback, evitando uma prévia vazia no WhatsApp.
 
-## Learn More
+## Publicação e domínio do Registro.br
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+1. Criar o projeto no provedor escolhido e conectar este repositório/branch.
+2. Configurar `NEXT_PUBLIC_SITE_URL` com a URL temporária do provedor.
+3. Rodar o build e conferir desktop e celular.
+4. Adicionar o domínio personalizado no provedor.
+5. Copiar exatamente os registros DNS fornecidos pelo provedor para o
+   Registro.br; não inventar IP, CNAME ou valor de verificação.
+6. Aguardar o HTTPS ficar ativo.
+7. Atualizar `NEXT_PUBLIC_SITE_URL` para o domínio final e publicar novamente.
+8. Compartilhar a URL no WhatsApp e conferir título, descrição e imagem.
+
+Se o WhatsApp mantiver uma prévia antiga, testar primeiro no
+[Sharing Debugger da Meta](https://developers.facebook.com/tools/debug/) e
+solicitar uma nova captura da URL.
+
+## Estrutura principal
+
+| Caminho | Função |
+|---|---|
+| `app/page.tsx` | Conteúdo e links da página |
+| `app/globals.css` | Layout, identidade visual e responsividade |
+| `app/SiteClient.tsx` | Menu, animações, galeria e contagem regressiva |
+| `app/layout.tsx` | SEO, Open Graph, Twitter Card e ícones |
+| `public/og-soraya-farah.jpg` | Imagem 1200×630 para WhatsApp e redes sociais |
+| `public/assets/` | Fotos e logos versionadas |
+| `tests/rendered-html.test.mjs` | Teste do HTML final |
+| `.github/workflows/ci.yml` | Validação automática no GitHub |
+
+## Regras para futuras alterações
+
+- Não substituir a copy sem aprovação da Soraya/gestão do projeto.
+- Manter os links de Instagram e Sympla em nova aba.
+- Preservar no celular: largura sem vazamento horizontal, galeria menor,
+  animação automática, arraste manual e indicação “arraste para o lado”.
+- Respeitar `prefers-reduced-motion`: nesse modo a galeria fica manual.
+- Não voltar a usar `object-fit: cover` nas fotos da galeria de produtos.
+- Não reutilizar o arquivo corrompido de logo em `assets/v10/`; a versão válida
+  está em `assets/v11/yoga-wellness-logo-clean.png`.
+- Nunca versionar `.env.local`, tokens ou credenciais.
+
+## Prompt de handoff para o Claude Code
+
+```text
+Use a branch claude-ready-2026-08-20 deste repositório como fonte de verdade.
+Não redesenhe nem reescreva o site. Primeiro execute npm ci, npm run lint e
+npm test. Configure NEXT_PUBLIC_SITE_URL com a URL pública. Faça o deploy no
+provedor acordado, conecte o domínio do Registro.br usando somente os registros
+DNS fornecidos pelo provedor e valide desktop, mobile, console do navegador e a
+prévia Open Graph/WhatsApp. Preserve integralmente os comportamentos mobile e a
+logo em public/assets/v11/yoga-wellness-logo-clean.png.
+```

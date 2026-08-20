@@ -350,10 +350,10 @@ const pageHtml = String.raw`
             <div>
               <img
                 class="path-yw-logo"
-                src="/assets/v10/yoga-wellness-logo-transparent.webp"
+                src="/assets/v11/yoga-wellness-logo-clean.png"
                 alt="Yoga &amp; Wellness Experience"
-                width="519"
-                height="716"
+                width="360"
+                height="497"
                 loading="lazy"
               />
               <p class="path-kicker">comunidade &amp; encontro</p>
@@ -378,10 +378,10 @@ const pageHtml = String.raw`
           <div class="event-copy reveal">
             <img
               class="event-yw-logo"
-              src="/assets/v10/yoga-wellness-logo-transparent.webp"
+              src="/assets/v11/yoga-wellness-logo-clean.png"
               alt="Yoga &amp; Wellness Experience"
-              width="519"
-              height="716"
+              width="360"
+              height="497"
               loading="lazy"
             />
             <h2>um lugar para pertencer, participar e continuar.</h2>
@@ -623,7 +623,7 @@ const pageHtml = String.raw`
       </div>
       <div class="section-shell footer-bottom">
         <span>© <span data-year></span> Soraya Farah.</span>
-        <span>Imagens conceituais · conteúdo sujeito à validação final.</span>
+        <span>Yoga · bem-estar · comunidade.</span>
       </div>
     </footer>
 `;

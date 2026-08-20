@@ -1468,7 +1468,9 @@ h1 {
 .product-gallery-frame img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
+  background: var(--white);
 }
 
 @keyframes product-gallery-drift {
